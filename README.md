@@ -1,0 +1,2 @@
+# LFP_Proyecto2_202000194
+Programa de solución de software que permite analizar y realizar reportes de datos para la toma de decisiones futuras y que además se puede aplicar a cualquier tipo de negocio, generando información interesante para pequeñas empresas. Esta solución tiene como entrada un lenguaje con cierta estructura por medio de un archivo con extensión “.lfp” del cual se realizan ejecuciones, simulando un compilador real.
