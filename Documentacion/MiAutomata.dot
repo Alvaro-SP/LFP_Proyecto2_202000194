@@ -1,0 +1,30 @@
+digraph G {
+    layout=dot   
+    fontcolor="black" 
+    label=" Mi Automata   "    
+    labelloc = "t"
+    bgcolor="yellow:orange"    
+    edge [weight=1000 style=radial color=black ]
+    node [shape=plaintext fontcolor=black]
+    Inicio->xo
+    node [shape=circle style="filled"  color="green:cyan" gradientangle="315"]
+    
+    
+    edge [weight=1000 style=bold color=black]
+    xo[shape=doublecircle color=blue fontcolor=white]
+    xo -> xo [label="* / [ / { / } / ] / ; / , / #" ]
+    xo -> x1 [label="\"/\'"]
+    x1 -> x1 [label="\"/\'"]
+    x1 -> xo [label="\"/\'"]
+    xo -> x2 [label="letra"]
+    x2 -> xo [label="no letra"]
+    x2 -> x2 [label="letra"]
+    xo -> x3 [label="digito"]
+    x3 -> xo [label="no digito"]
+    x3 -> x3 [label="digito"]
+    x3 -> x4 [label="  ."]
+    x5 -> x5 [label="digito"]
+    x4 -> x5 [label="digito"]
+    x5 -> xo [label="no digito"]
+
+}
