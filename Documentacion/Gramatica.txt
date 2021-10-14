@@ -1,0 +1,82 @@
+██████████████Gramática independientes de contexto████████████
+
+INICIO = lista_instrucciones
+
+LISTA_INSTRUCCIONES = INSTRUCCION LISTA_INSTRUCCIONES2
+
+LISTA_INSTRUCCIONES2 = INSTRUCCION LISTA_INSTRUCCIONES2
+					 | Epsilon
+
+
+INSTRUCCION = INS_CLAVES
+			| INS_REGISTROS
+			| INS_IMPRIMIR
+			| INS_IMPRIMIRLN
+			| INS_CONTEO
+			| INS_PROMEDIO
+			| INS_CONTARSI
+			| INS_DATOS
+			| INS_SUMAR
+			| INS_MAX
+			| INS_MIN
+			| INS_EXPORTARREPORTE
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA CLAVES▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_CLAVES = claves igual corchetea LISTA_CLAVES corchetec
+
+LISTA_CLAVES = cadena LISTA_CLAVES2
+
+LISTA_CLAVES2 = coma  LISTA_CLAVES
+                | Epsilon (corchetec)
+
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA REGISTROS▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_REGISTROS = registros igual corchetea LISTA_REGISTROS corchetec
+
+LISTA_REGISTROS = REGISTRO LISTA_REGISTROS2
+
+LISTA_REGISTROS2 = REGISTRO LISTA_REGISTROS2
+				| Epsilon (corchetec)
+
+REGISTRO = llavea LISTA_VAL_REG llavec
+
+LISTA_VAL_REG = VAL_REG LISTA_VAL_REG
+
+LISTA_VAL_REG2 = coma VAL_REG LISTA_VAL_REG2
+				| Epsilon (llavec)
+
+VAL_REG = cadena
+		| entero
+		| decimal
+
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬GRAMATICA IMPRIMIR ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_IMPRIMIR = imprimir parena cadena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA IMPRIMIRLN ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_IMPRIMIRLN = imprimirln parena cadena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA CONTEO ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_CONTEO = conteo parena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA PROMEDIO ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_PROMEDIO = promedio parena cadena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA CONTARSI ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_CONTARSI = contarsi parena cadena coma entero parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA DATOS ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_DATOS = datos parena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA SUMAR ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_SUMAR = sumar parena cadena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA MAX ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_MAX = max parena cadena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA MIN ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_MIN = min parena cadena parenc puntoycoma
+
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ GRAMATICA EXPORTARREPORTE ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+INS_EXPORTARREPORTE= exportarReporte parena cadena parenc puntoycoma
+
