@@ -5,7 +5,9 @@ from Error import *
 from loadfile import *
 import mensaje
 import os
-
+listaErrores=[]
+contarchivos=0
+nametable=""
 class analizefile():
     def __init__(self):
         self.listaTokens = []
@@ -16,16 +18,51 @@ class analizefile():
         self.tabla=[]
         self.textoconsola=""
         self.canproces=None
+        self.Arbol=""
+        self.Arbol_claves=""
+        self.cont=0
+        self.contreg2=0
+        self.contreg=0
+        self.contvalreg=0
+        self.impr=0
+        self.imprln=0
+        self.conteotxt=0
+        self.promtxt=0
+        self.contarsitxt=0
+        self.datostxt=0
+        self.sumartxt=0
+        self.maxtxt=0
+        self.mintxt=0
+        self.exportxt=0
+        self.contarchivos=1
 
     def analizar(self, file):
+        global contarchivos
+        global listaErrores
         self.listaTokens = []
         self.listTokens = []
-        self.listaErrores = []
+        self.listaErrores = listaErrores
         self.listClaves=[]
         self.listRegistros=[]
         self.tabla=[]
         self.textoconsola=""
         self.canproces=None
+        self.Arbol=""
+        self.Arbol_claves=""
+        self.cont=0
+        self.contreg2=0
+        self.contreg=0
+        self.contvalreg=0
+        self.impr=0
+        self.imprln=0
+        self.conteotxt=0
+        self.promtxt=0
+        self.contarsitxt=0
+        self.datostxt=0
+        self.sumartxt=0
+        self.maxtxt=0
+        self.mintxt=0
+        self.exportxt=0
         file=file.lower()
         #*inicializar atributos
         linea = 1
@@ -289,32 +326,59 @@ class analizefile():
                     columna += 1
             i += 1
         indicetoken=0
-        # a=mensaje.App()
-        # a.initUI("SE HA REALIZADO EL ANALISIS LEXICO ")
+        a=mensaje.App()
+        a.initUI("SE HA REALIZADO EL ANALISIS LEXICO ")
         self.textoconsola+="*****  Fin del Análisis Léxico  *****\n"
-
+        self.Arbol=""" 
+            digraph G {
+            layout=dot   
+            fontcolor="black" 
+            label="ARBOL DE DERIVACIÓN"    
+            labelloc = "t"
+            bgcolor="orange:red"    
+            edge [weight=1000 style=radial color=black ]
+            node [shape=ellipse style="filled"  color="green:lightblue" gradientangle="315"]
+            ___INICIO___[shape=ellipse color=green fontcolor=black]  \n""" 
         self.Sintactic_analize(indicetoken)
         if self.canproces != False :
             self.textoconsola+="*****  Fin del Análisis Sintáctico  *****\n"
             self.Procesar(0)
+
+            self.Arbol+="\n }"
+            try:                
+                file=open('Graficos_generados/Grafico_Arbol_Derivacion'+str(self.contarchivos)+'.dot','w')
+                file.write(self.Arbol)
+                file.close()
+                os.system('dot -Tpng Graficos_generados/Grafico_Arbol_Derivacion'+str(self.contarchivos)+'.dot -o Graficos_generados/graficoimagen_Arbol_Derivacion'+str(self.contarchivos)+'.png')
+                os.startfile(r"Graficos_generados\graficoimagen_Arbol_Derivacion"+str(self.contarchivos)+".png")
+                print("\033[1;32m"+"\nSe ha generado el gráfico Arbol_Derivacion con éxito... \n"+'\033[0;m')
+                contarchivos=self.contarchivos
+                self.contarchivos+=1
+            except Exception:
+                print("\033[1;31m"+"\nUps... algo salió mal :( podria haber un error, intentelo nevamente\n"+'\033[0;m')     
+                return False
+            print("ANALISIS SINTÁCTICO REALIZADO CON ÉXITO")
         else:
             print("Algo salio mal pudo deberse al analisis SINTÁCTICO")
-        # print("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
-        # print("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
+        print("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
+        print("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬")
         # print("CANPROCESS  ", canproces)
-        # a=mensaje.App()
-        # a.initUI("SE HA REALIZADO EL ANALISIS SINTÁCTICO ")
-
+        a=mensaje.App()
+        a.initUI("SE HA REALIZADO EL ANALISIS SINTÁCTICO ")
+        listaErrores=self.listaErrores
         return self.textoconsola
 
     #!  'claves'
     def clave4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='coma':
+            
             return self.clave3(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='corchetec':
+            
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba una , o ] y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una COMA o un CORCHETE ] y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def clave3(self, indicetoken):
@@ -323,19 +387,22 @@ class analizefile():
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una CADENA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
+            self.listaErrores.append(Error(f'Se esperaba una CADENA  y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             return False, indicetoken
     def clave2(self, indicetoken):
-        if self.listaTokens[indicetoken].tipo=='corchetea':
-            return self.clave3(indicetoken+1)
+        if self.listaTokens[indicetoken].tipo=='corchetea':return self.clave3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba un Corchetea [ y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un CORCHETE [ y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def clave1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='igual':
             return self.clave2(indicetoken+1)
+            
         else:
             print(f"Error sintáctico: Se esperaba un un signo IGUAL = y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba un signo IGUAL = y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un signo IGUAL = y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
 
@@ -347,6 +414,7 @@ class analizefile():
             return self.registro4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba un Corchetec o llavea y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un CORCHETE ] o una LLAVE QUE ABRE y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def registro5(self, indicetoken):
@@ -356,13 +424,16 @@ class analizefile():
             return self.registro6(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba una coma y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una COMA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def registro4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena' or self.listaTokens[indicetoken].tipo=='decimal' or self.listaTokens[indicetoken].tipo=='entero':
+            
             return self.registro5(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba una cadena, entero o decimal y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una CADENA, DECIMAL O ENTERO y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def registro3(self, indicetoken):
@@ -370,6 +441,7 @@ class analizefile():
             return self.registro4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba un llavea y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una LLAVE QUE ABRE y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def registro2(self, indicetoken):
@@ -377,13 +449,16 @@ class analizefile():
             return self.registro3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba corchetea y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba  un CORCHETE [ y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def registro1(self, indicetoken):
+        
         if self.listaTokens[indicetoken].tipo=='igual':
             return self.registro2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un signo IGUAL = y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba signoigual y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un signo IGUAL = y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
 
@@ -393,6 +468,7 @@ class analizefile():
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba puntoycoma y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PUNTO Y COMA ; y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def imprimir3(self, indicetoken):
@@ -400,6 +476,7 @@ class analizefile():
             return self.imprimir4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba parentesisc y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ) y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def imprimir2(self, indicetoken):
@@ -407,6 +484,7 @@ class analizefile():
             return self.imprimir3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba cadena y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una CADENA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def imprimir1(self, indicetoken):
@@ -414,6 +492,7 @@ class analizefile():
             return self.imprimir2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba parentesisa y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ( y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
 
@@ -423,6 +502,7 @@ class analizefile():
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba puntoycoma y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba  un PUNTO Y COMA ; y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def conteo2(self, indicetoken):
@@ -430,6 +510,7 @@ class analizefile():
             return self.conteo3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba parentesisc y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ) y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def conteo1(self, indicetoken):
@@ -437,6 +518,7 @@ class analizefile():
             return self.conteo2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba parentesisa y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ( y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
 
@@ -446,6 +528,7 @@ class analizefile():
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un PUNTO Y COMA y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba puntoycoma y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba PUNTO Y COMA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def contarsi5(self, indicetoken):
@@ -453,6 +536,7 @@ class analizefile():
             return self.contarsi6(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba parentesisc y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ) y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def contarsi4(self, indicetoken):
@@ -460,13 +544,15 @@ class analizefile():
             return self.contarsi5(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un ENTERO y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
-            self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba ({self.listaTokens[indicetoken].tipo}) y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
+            self.listaErrores.append(Error(f'Se esperaba entero y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
+            self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un entero y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def contarsi3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='coma':
             return self.contarsi4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba una COMA y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba coma y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una COMA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def contarsi2(self, indicetoken):
@@ -474,6 +560,7 @@ class analizefile():
             return self.contarsi3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba una cadena y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba cadena y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una CADENA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def contarsi1(self, indicetoken):
@@ -481,36 +568,46 @@ class analizefile():
             return self.contarsi2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            self.listaErrores.append(Error(f'Se esperaba parentesisa y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ( y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
 
     #!  ANALISIS SINTACTICO DEL LENGUAJE
     def Sintactic_analizer(self, indicetoken):
+
         if self.listaTokens[indicetoken].tipo=='claves':
             return self.clave1(indicetoken+1)
-        elif self.listaTokens[indicetoken].tipo=='registros':
+        elif self.listaTokens[indicetoken].tipo=='registros':            
             return self.registro1(indicetoken+1)
-        elif self.listaTokens[indicetoken].tipo=='imprimir':
+        elif self.listaTokens[indicetoken].tipo=='imprimir':            
             return self.imprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='imprimirln':
             return self.imprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='conteo':
             return self.conteo1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='promedio':
+            # self.Arbol_promedio+="\n___INICIO___ -> __PROMEDIO__ "
             return self.imprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='contarsi':
+            # self.Arbol_claves+="\n___INICIO___ -> __CONTARSI__ "
             return self.contarsi1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='datos':
+            # self.Arbol_claves+="\n___INICIO___ -> __DATOS__ "
             return self.conteo1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='sumar':
+            # self.Arbol_claves+="\n___INICIO___ -> __SUMAR__ "
             return self.imprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='max':
+            # self.Arbol_claves+="\n___INICIO___ -> __MAX__ "
             return self.imprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='min':
+            # self.Arbol_claves+="\n___INICIO___ -> __MIN__ "
             return self.imprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='exportarreporte':
+            # self.Arbol_claves+="\n___INICIO___ -> __EXPORTARREPORTE__ "
             return self.imprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='comentariosimple' or self.listaTokens[indicetoken].tipo=='comentariomultilinea':
+            # self.Arbol_claves+="\n___INICIO___ -> __COMENTARIOSIMPLE__ "
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -520,6 +617,7 @@ class analizefile():
         self.canproces=False
     def Sintactic_analize(self, indicetoken):
         analisis, indicetoken = self.Sintactic_analizer(indicetoken)
+        
         if analisis :
             if indicetoken+1<len(self.listaTokens):
                 self.Sintactic_analize(indicetoken+1)
@@ -529,12 +627,22 @@ class analizefile():
         # if indicetoken+1==len(self.listaTokens):
         #     return True
 
+
     #!EJECUTANDO EL ARCHIVO▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
     #!  'claves'
     def Sclave4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='coma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\",\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__LISTACLAVES__ -> {temp} "
             return self.Sclave3(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='corchetec':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"]\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__CLAVES__ -> {temp} "
+            self.Arbol+=self.Arbol_claves
             # self.tabla.append(self.listClaves)
             return True, indicetoken
         else:
@@ -543,6 +651,10 @@ class analizefile():
             return False, indicetoken
     def Sclave3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
+            tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
+            self.Arbol_claves+=f"\n__LISTACLAVES__ -> {  tempstring  } "            
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
             tempstring=tempstring.replace('\'','')
             self.listClaves.append(tempstring)
@@ -553,6 +665,12 @@ class analizefile():
             return False, indicetoken
     def Sclave2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='corchetea':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"[\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__CLAVES__ -> {temp} "
+            self.Arbol_claves+=f"\n__CLAVES__ -> __LISTACLAVES__ "
+            
             return self.Sclave3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -560,6 +678,10 @@ class analizefile():
             return False, indicetoken
     def Sclave1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='igual':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"=\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__CLAVES__ -> {temp} "
             return self.Sclave2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un signo IGUAL = y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -569,8 +691,27 @@ class analizefile():
     #!  'registros'
     def Sregistro6(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='corchetec':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"]\" ]"
+            corchetecont=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__REGISTROS__ -> {corchetecont}"
+            self.Arbol+=self.Arbol_claves
             return True, indicetoken
         elif self.listaTokens[indicetoken].tipo=='llavea':
+            cortemp="{"
+            self.Arbol_claves+=f"\n{self.cont} [ label=\" {cortemp} \" ]"
+            llaveacont=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTAREGISTROS2__\" ]"
+            self.contreg2=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTAVALREG__\" ]"
+            self.contvalreg=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__LISTAREGISTROS__ -> {self.contreg2} "
+            self.Arbol_claves+=f"\n{self.contreg2} -> {llaveacont} "
+            self.Arbol_claves+=f"\n{self.contreg2} -> {self.contvalreg} "
+
             return self.Sregistro4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -578,8 +719,17 @@ class analizefile():
             return False, indicetoken
     def Sregistro5(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='coma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\",\" ] "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contvalreg} -> \"{temp}\" "
             return self.Sregistro4(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='llavec':
+            cortemp="}"
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{cortemp}\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contreg2} -> \"{temp}\" "
             self.tabla.append(self.listRegistros)
             self.listRegistros=[]
             return self.Sregistro6(indicetoken+1)
@@ -589,11 +739,23 @@ class analizefile():
             return False, indicetoken
     def Sregistro4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena' or self.listaTokens[indicetoken].tipo=='decimal' or self.listaTokens[indicetoken].tipo=='entero':
+            
             if self.listaTokens[indicetoken].tipo=='cadena':
                 tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+                tempstring=tempstring.replace("\\",'')
+                tempstring=tempstring.replace("/",'')
                 tempstring=tempstring.replace('\'','')
+                self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+                temp1=self.cont
+                self.cont+=1
+                self.Arbol_claves+=f"\n{self.contvalreg} -> {temp1}"
+                
                 self.listRegistros.append(tempstring)
             else:
+                self.Arbol_claves+=f"\n{self.cont} [ label=\"{self.listaTokens[indicetoken].lexema}\" ]"
+                temp=self.cont
+                self.cont+=1
+                self.Arbol_claves+=f"\n{self.contvalreg} -> {temp}"
                 self.listRegistros.append(self.listaTokens[indicetoken].lexema)
             return self.Sregistro5(indicetoken+1)
         else:
@@ -602,6 +764,19 @@ class analizefile():
             return False, indicetoken
     def Sregistro3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='llavea':
+            cortemp="{"
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{cortemp}\" ]"
+            llaveacont=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTAREGISTROS2__\" ]"
+            self.contreg2=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTAVALREG__\" ]"
+            self.contvalreg=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__LISTAREGISTROS__ -> {self.contreg2} "
+            self.Arbol_claves+=f"\n{self.contreg2} -> {llaveacont} "
+            self.Arbol_claves+=f"\n{self.contreg2} -> {self.contvalreg} "
             return self.Sregistro4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -609,6 +784,11 @@ class analizefile():
             return False, indicetoken
     def Sregistro2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='corchetea':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"[\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__REGISTROS__ -> {temp} "
+            self.Arbol_claves+="\n__REGISTROS__ -> \"__LISTAREGISTROS__ \" "
             return self.Sregistro3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -616,6 +796,10 @@ class analizefile():
             return False, indicetoken
     def Sregistro1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='igual':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"=\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n__REGISTROS__ -> {temp} "
             return self.Sregistro2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un signo IGUAL = y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -625,6 +809,11 @@ class analizefile():
     #!  'imprimir' y 'imprimirln' y 'promedio' y 'sumar' y 'max' y 'min' y 'exportarreporte'
     def Simprimir4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.impr} -> {temp} "
+            self.Arbol+=self.Arbol_claves
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -632,6 +821,10 @@ class analizefile():
             return False, indicetoken
     def Simprimir3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.impr} -> {temp} "
             return self.Simprimir4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -640,7 +833,14 @@ class analizefile():
     def Simprimir2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
             tempstring=tempstring.replace('\'','')
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.impr} -> {temp} "
+            
             self.textoconsola+=f"{tempstring}\n"
             return self.Simprimir3(indicetoken+1)
         else:
@@ -649,6 +849,10 @@ class analizefile():
             return False, indicetoken
     def Simprimir1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.impr} -> {temp} "
             return self.Simprimir2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -658,6 +862,11 @@ class analizefile():
     #!  'imprimirln'
     def Simprimirln4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.imprln} -> {temp} "
+            self.Arbol+=self.Arbol_claves
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -665,6 +874,11 @@ class analizefile():
             return False, indicetoken
     def Simprimirln3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.imprln} -> {temp} "
+            
             return self.Simprimirln4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -673,7 +887,14 @@ class analizefile():
     def Simprimirln2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
             tempstring=tempstring.replace('\'','')
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.imprln} -> {temp} "
+            
+            
             self.textoconsola+=f"{tempstring}"
             return self.Simprimirln3(indicetoken+1)
         else:
@@ -682,6 +903,10 @@ class analizefile():
             return False, indicetoken
     def Simprimirln1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.imprln} -> {temp} "
             return self.Simprimirln2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -691,6 +916,11 @@ class analizefile():
     #!   'promedio'
     def Spromedio4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.promtxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -698,6 +928,10 @@ class analizefile():
             return False, indicetoken
     def Spromedio3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.promtxt} -> {temp} "
             return self.Spromedio4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -706,7 +940,15 @@ class analizefile():
     def Spromedio2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
             tempstring=tempstring.replace('\'','')
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.promtxt} -> {temp} "
+            
+            
             try:
                 i=self.listClaves.index(tempstring)
                 prom=0
@@ -725,6 +967,11 @@ class analizefile():
             return False, indicetoken
     def Spromedio1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.promtxt} -> {temp} "
+            
             return self.Spromedio2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -734,6 +981,11 @@ class analizefile():
     #!'conteo'  
     def Sconteo3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.conteotxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -741,6 +993,10 @@ class analizefile():
             return False, indicetoken
     def Sconteo2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.conteotxt} -> {temp} "
             return self.Sconteo3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -748,6 +1004,10 @@ class analizefile():
             return False, indicetoken
     def Sconteo1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.conteotxt} -> {temp} "
             try:
                 self.textoconsola+=f"\n{len(self.tabla)}\n"
             except:
@@ -761,6 +1021,11 @@ class analizefile():
     #!'datos'
     def Sdatos3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.datostxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -768,6 +1033,10 @@ class analizefile():
             return False, indicetoken
     def Sdatos2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.datostxt} -> {temp} "
             return self.Sdatos3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -775,6 +1044,10 @@ class analizefile():
             return False, indicetoken
     def Sdatos1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.datostxt} -> {temp} "
             try:
                 self.textoconsola+=f"\n"
                 for w in (self.listClaves):
@@ -796,6 +1069,12 @@ class analizefile():
     #!  'contarsi'
     def Scontarsi6(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contarsitxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
+            
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un PUNTO Y COMA y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -803,6 +1082,11 @@ class analizefile():
             return False, indicetoken
     def Scontarsi5(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contarsitxt} -> {temp} "
+            
             return self.Scontarsi6(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -810,6 +1094,11 @@ class analizefile():
             return False, indicetoken
     def Scontarsi4(self, indicetoken, clavecont):
         if self.listaTokens[indicetoken].tipo=='entero':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{self.listaTokens[indicetoken].lexema}\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contarsitxt} -> {temp} "
+
             tempstring=clavecont.replace('"','')
             tempstring=tempstring.replace('\'','')
             try:
@@ -828,20 +1117,38 @@ class analizefile():
             return False, indicetoken
     def Scontarsi3(self, indicetoken, clavecont):
         if self.listaTokens[indicetoken].tipo=='coma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\",\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contarsitxt} -> {temp} "
+
             return self.Scontarsi4(indicetoken+1, clavecont)
         else:
             print(f"Error sintáctico: Se esperaba una COMA y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una COMA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def Scontarsi2(self, indicetoken):
-        if self.listaTokens[indicetoken].tipo=='cadena':
-            return self.Scontarsi3(indicetoken+1, self.listaTokens[indicetoken].lexema)
+        if self.listaTokens[indicetoken].tipo=='cadena' or self.listaTokens[indicetoken].tipo=='decimal' or self.listaTokens[indicetoken].tipo=='entero':
+            tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
+            self.Arbol_claves+=f"\n{self.cont} [ label={ tempstring } ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contarsitxt} -> {temp} "
+            
+            return self.Scontarsi3(indicetoken+1, tempstring)
         else:
             print(f"Error sintáctico: Se esperaba una cadena y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba una CADENA y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def Scontarsi1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.contarsitxt} -> {temp} "
+            
             return self.Scontarsi2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -851,6 +1158,12 @@ class analizefile():
     #!  'sumar'
     def Sumar4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.sumartxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
+            
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -858,6 +1171,11 @@ class analizefile():
             return False, indicetoken
     def Sumar3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.sumartxt} -> {temp} "
+            
             return self.Sumar4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -866,7 +1184,15 @@ class analizefile():
     def Sumar2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
             tempstring=tempstring.replace('\'','')
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.sumartxt} -> {temp} "
+            
+            
             try:
                 i=self.listClaves.index(tempstring)
                 prom=0
@@ -886,6 +1212,11 @@ class analizefile():
             return False, indicetoken
     def Sumar1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.sumartxt} -> {temp} "
+            
             return self.Sumar2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -895,6 +1226,12 @@ class analizefile():
     #!  'max'
     def max4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.maxtxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
+            
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -902,6 +1239,11 @@ class analizefile():
             return False, indicetoken
     def max3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.maxtxt} -> {temp} "
+            
             return self.max4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -910,7 +1252,15 @@ class analizefile():
     def max2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
             tempstring=tempstring.replace('\'','')
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.maxtxt} -> {temp} "
+            
+            
             try:
                 i=self.listClaves.index(tempstring)
                 listtemp=[]
@@ -930,6 +1280,11 @@ class analizefile():
             return False, indicetoken
     def max1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.maxtxt} -> {temp} "
+            
             return self.max2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -939,6 +1294,12 @@ class analizefile():
     #!  'min'
     def min4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.mintxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
+            
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -946,6 +1307,11 @@ class analizefile():
             return False, indicetoken
     def min3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.mintxt} -> {temp} "
+            
             return self.min4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -954,7 +1320,15 @@ class analizefile():
     def min2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
             tempstring=tempstring.replace('\'','')
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.mintxt} -> {temp} "
+            
+            
             try:
                 i=self.listClaves.index(tempstring)
                 listtemp=[]
@@ -975,6 +1349,11 @@ class analizefile():
             return False, indicetoken
     def min1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.mintxt} -> {temp} "
+            
             return self.min2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -983,6 +1362,7 @@ class analizefile():
 
     #!   'exportarreporte'
     def crearHTML(self,name):
+        global nametable
         contenido = ''
         namel=name.replace(" ","")
         namel=namel.replace("\"","")
@@ -1008,6 +1388,7 @@ class analizefile():
         htmFile.close
         try:
             os.startfile(r"TablaGenerada\Tabla_Exportada_" +str(namel)+ r".html")
+            nametable=namel
             print("\033[1;32m"+"\nSe ha ABIERTO el HTML con éxito... \n"+'\033[0;m')
             
         except Exception:
@@ -1015,6 +1396,12 @@ class analizefile():
             return False
     def exportarReporte4(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='puntocoma':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\";\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.exportxt} -> {temp} "
+            self.Arbol+=self.Arbol_claves
+            
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se esperaba un  un PUNTO Y COMA ; y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -1022,6 +1409,11 @@ class analizefile():
             return False, indicetoken
     def exportarReporte3(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parenc':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\")\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.exportxt} -> {temp} "
+            
             return self.exportarReporte4(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un PARENTESIS ) y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -1030,7 +1422,15 @@ class analizefile():
     def exportarReporte2(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='cadena':
             tempstring=(self.listaTokens[indicetoken].lexema).replace('"','')
+            tempstring=tempstring.replace("\\",'')
+            tempstring=tempstring.replace("/",'')
             tempstring=tempstring.replace('\'','')
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"{  tempstring  }\" ]  "
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.exportxt} -> {temp} "
+            
+            
             try:
                 self.crearHTML(tempstring)
                 self.textoconsola+=f"\nReporte Exportado Exitosamente\n"
@@ -1043,6 +1443,11 @@ class analizefile():
             return False, indicetoken
     def exportarReporte1(self, indicetoken):
         if self.listaTokens[indicetoken].tipo=='parena':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"(\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.exportxt} -> {temp} "
+            
             return self.exportarReporte2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un Paréntesis (  y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -1051,31 +1456,85 @@ class analizefile():
 
     #! PROCESAMIENTO USANDO RECURSIVIDAD
     def CargarListas(self, indicetoken):
+        self.Arbol_claves=""
         if self.listaTokens[indicetoken].tipo=='claves':
+            self.Arbol_claves+="\n___INICIO___ -> __CLAVES__ "
             return self.Sclave1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='registros':
+            self.Arbol_claves+="\n___INICIO___ -> __REGISTROS__ "
             return self.Sregistro1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='imprimir':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__IMPRIMIR__\" ]"
+            self.impr=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.impr} "
             return self.Simprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='imprimirln':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__IMPRIMIRLN__\" ]"
+            self.imprln=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.imprln} "
+
             return self.Simprimirln1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='conteo':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__CONTEO__\" ]"
+            self.conteotxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.conteotxt} "
+
             return self.Sconteo1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='promedio':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__PROMEDIO__\" ]"
+            self.promtxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.promtxt} "
+
             return self.Spromedio1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='contarsi':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__CONTARSI__\" ]"
+            self.contarsitxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.contarsitxt} "
+
             return self.Scontarsi1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='datos':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__DATOS__\" ]"
+            self.datostxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.datostxt} "
+
             return self.Sdatos1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='sumar':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__SUMAR__\" ]"
+            self.sumartxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.sumartxt} "
+
             return self.Sumar1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='max':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__MAX__\" ]"
+            self.maxtxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.maxtxt} "
+
             return self.max1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='min':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__MIN__\" ]"
+            self.mintxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.mintxt} "
+
             return self.min1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='exportarreporte':
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__EXPORTARREPORTE__\" ]"
+            self.exportxt=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n___INICIO___ -> {self.exportxt} "
+
+
             return self.exportarReporte1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='comentariosimple' or self.listaTokens[indicetoken].tipo=='comentariomultilinea':
+            self.Arbol_claves+="\n___INICIO___ -> __COMENTARIOS__ "
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -1083,6 +1542,7 @@ class analizefile():
             return False, indicetoken
     def Procesar(self, indicetoken):
         analisis, indicetoken = self.CargarListas(indicetoken)
+        
         if analisis :
             if indicetoken+1<len(self.listaTokens):
                 self.Procesar(indicetoken+1)
@@ -1147,4 +1607,5 @@ class analizefile():
         htmFile.close
 
 
-
+            
+            

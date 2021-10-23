@@ -51,7 +51,7 @@ class Ui_SMARTWATCH_WINDOW(object):
         self.lbl_myicon = QtWidgets.QLabel(self.centralwidget)
         self.lbl_myicon.setGeometry(QtCore.QRect(1030, 475, 85, 85))
         self.lbl_myicon.setText("")
-        # self.lbl_myicon.setPixmap(QtGui.QPixmap("images/logo.gif"))
+        self.lbl_myicon.setPixmap(QtGui.QPixmap("images/logo.gif"))
         self.lbl_myicon.setScaledContents(True)
         self.lbl_myicon.setObjectName("lbl_myicon")
         self.movie3=QMovie("images/logo.gif")
@@ -61,10 +61,12 @@ class Ui_SMARTWATCH_WINDOW(object):
         self.combo.setGeometry(QtCore.QRect(850, 30, 141, 31))
         self.combo.setObjectName("combo")
         icon1 = QtGui.QIcon()
-        # icon1.addPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/Gear1.gif"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/Gear1.gif"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.combo.addItem(icon1, "Reportes")
         self.combo.addItem(icon1, "Tokens")
         self.combo.addItem(icon1, "Errores")
+        self.combo.addItem(icon1, "Tabla")
+        self.combo.addItem(icon1, "Arbol")
         self.combo.activated[str].connect(self.onChanged)
         self.btn_abrir = QtWidgets.QPushButton(self.centralwidget)
         self.btn_abrir.setGeometry(QtCore.QRect(610, 30, 111, 31))
@@ -78,19 +80,19 @@ class Ui_SMARTWATCH_WINDOW(object):
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
         self.label_5.setGeometry(QtCore.QRect(910, 150, 101, 71))
         self.label_5.setText("")
-        # self.label_5.setPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/Gear1.gif"))
+        self.label_5.setPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/Gear1.gif"))
         self.label_5.setScaledContents(True)
         self.label_5.setObjectName("label_5")
         self.lbl_SMARTWATCH = QtWidgets.QLabel(self.centralwidget)
         self.lbl_SMARTWATCH.setGeometry(QtCore.QRect(40, 30, 371, 71))
         self.lbl_SMARTWATCH.setText("")
-        # self.lbl_SMARTWATCH.setPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/cooltext392345411513032.gif"))
+        self.lbl_SMARTWATCH.setPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/cooltext392345411513032.gif"))
         self.lbl_SMARTWATCH.setScaledContents(True)
         self.lbl_SMARTWATCH.setObjectName("lbl_SMARTWATCH")
         self.lbl_BRAZOROBOTICO = QtWidgets.QLabel(self.centralwidget)
         self.lbl_BRAZOROBOTICO.setGeometry(QtCore.QRect(-90, 200, 361, 321))
         self.lbl_BRAZOROBOTICO.setText("")
-        # self.lbl_BRAZOROBOTICO.setPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/robot.gif"))
+        self.lbl_BRAZOROBOTICO.setPixmap(QtGui.QPixmap("../../../../../IPC2 E/LAB IPC2 E/PROYECTO 2/Codigo Fuente/Codigo Fuente/images/robot.gif"))
         self.lbl_BRAZOROBOTICO.setScaledContents(True)
         self.lbl_BRAZOROBOTICO.setAlignment(QtCore.Qt.AlignCenter)
         self.lbl_BRAZOROBOTICO.setObjectName("lbl_BRAZOROBOTICO")
@@ -267,7 +269,7 @@ class Ui_SMARTWATCH_WINDOW(object):
         "font: 20pt \"Snap ITC\";")
         self.lbl_tittle_2.setText("")
         self.lbl_tittle_2.setTextFormat(QtCore.Qt.AutoText)
-        # self.lbl_tittle_2.setPixmap(QtGui.QPixmap("../../../../../../../Pictures/oie_25212249BZ616093.gif"))
+        self.lbl_tittle_2.setPixmap(QtGui.QPixmap("../../../../../../../Pictures/oie_25212249BZ616093.gif"))
         self.lbl_tittle_2.setScaledContents(True)
         self.lbl_tittle_2.setAlignment(QtCore.Qt.AlignCenter)
         self.lbl_tittle_2.setWordWrap(False)
@@ -297,6 +299,7 @@ class Ui_SMARTWATCH_WINDOW(object):
         self.menuAYUDA.setObjectName("menuAYUDA")
         self.menuSALIR = QtWidgets.QMenu(self.menubar)
         self.menuSALIR.setObjectName("menuSALIR")
+
         SMARTWATCH_WINDOW.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(SMARTWATCH_WINDOW)
         self.statusbar.setObjectName("statusbar")
@@ -343,6 +346,7 @@ class Ui_SMARTWATCH_WINDOW(object):
         font.setWeight(75)
         self.actionINFORMACI_N_PERSONAL.setFont(font)
         self.actionINFORMACI_N_PERSONAL.setObjectName("actionINFORMACI_N_PERSONAL")
+        self.actionINFORMACI_N_PERSONAL.triggered.connect(self.infopersonal)
         self.actionACERCA_DE = QtWidgets.QAction(SMARTWATCH_WINDOW)
         self.actionACERCA_DE.setCheckable(False)
         self.actionSALIR = QtWidgets.QAction(SMARTWATCH_WINDOW)
@@ -354,8 +358,13 @@ class Ui_SMARTWATCH_WINDOW(object):
         font.setWeight(75)
         self.actionACERCA_DE.setFont(font)
         self.actionACERCA_DE.setObjectName("actionACERCA_DE")
+        self.actionACERCA_DE.triggered.connect(self.acercade)
         self.actionSALIR.setFont(font)
-        self.actionSALIR.setObjectName("actionSALIR")
+        self.actionSALIR.setObjectName("actionSALIR")       
+        self.actionSALIR.setShortcut('Esc')
+        self.actionSALIR.setStatusTip('Exit application')
+        self.actionSALIR.triggered.connect(exit)
+        self.menuSALIR.addAction(self.actionSALIR)
         self.menuCARGAR_ARCHIVOS.addAction(self.actionARCHIVO_DE_CONFIGURACI_N)
         self.menuCARGAR_ARCHIVOS.addSeparator()
         self.menuCARGAR_ARCHIVOS.addAction(self.actionARCHIVO_DE_SIMULACI_N)
@@ -382,6 +391,8 @@ class Ui_SMARTWATCH_WINDOW(object):
         self.combo.setItemText(0, _translate("SMARTWATCH_WINDOW", "Reportes"))
         self.combo.setItemText(1, _translate("SMARTWATCH_WINDOW", "Tokens"))
         self.combo.setItemText(2, _translate("SMARTWATCH_WINDOW", "Errores"))
+        self.combo.setItemText(3, _translate("SMARTWATCH_WINDOW", "Tabla"))
+        self.combo.setItemText(4, _translate("SMARTWATCH_WINDOW", "Arbol"))
         
         self.btn_abrir.setText(_translate("SMARTWATCH_WINDOW", "ABRIR"))
         self.lbl_procesorealizado.setText(_translate("SMARTWATCH_WINDOW", "Consola"))
@@ -424,6 +435,23 @@ class Ui_SMARTWATCH_WINDOW(object):
             print("VIENDO LOS REPORTES DE ERRORES")
         except :
             return
+    def view_table(self):
+        b = analizefile.nametable
+        try:
+            os.startfile(r"TablaGenerada\Tabla_Exportada_" +str(b)+ r".html")
+            print("\033[1;32m"+"\nSe ha ABIERTO el HTML con éxito... \n"+'\033[0;m')            
+        except :
+            print("\033[1;31m"+"\nUps... No se puede abrir el archivo, talvez no lo ha generado :( \n"+'\033[0;m')     
+            return False
+    def view_tree(self):
+        a=analizefile.contarchivos
+        try:
+            os.startfile(r"Graficos_generados\graficoimagen_Arbol_Derivacion"+str(a)+".png")
+            print("\033[1;32m"+"\nSe ha ABIERTO el HTML con éxito... \n"+'\033[0;m')            
+        except :
+            print("\033[1;31m"+"\nUps... No se puede abrir el archivo, talvez no lo ha generado :( \n"+'\033[0;m')     
+            return False
+
     def analizarfile(self):
         try:
             a=analizefile.analizefile()
@@ -457,9 +485,19 @@ class Ui_SMARTWATCH_WINDOW(object):
             self.view_reports()
         elif text=='Errores':
             self.view_reports2()
+        elif text=='Tabla':
+            self.view_table()
+        elif text=='Arbol':
+            self.view_tree()
+    def infopersonal(self):
+        a=mensaje.App()
+        a.initUI("Nombre Desarrollador: Alvaro Emmanuel Socop Pérez\nCarne: 202000194\nCurso: Laboratorio de LFP\nSección: B+\n")
+    def acercade(self):
+        a=mensaje.App()
+        a.initUI("Aplicación desarrollada en python Un analizador sintáctico (parser) o simplemente analizador, es un programa informático que analiza una cadena de símbolos según las reglas de una gramática formal. El término proviene del latín pars, que significa parte (del discurso). Usualmente hace uso de un compilador, en cuyo caso, transforma una entrada en un árbol sintáctico de derivación.\nEl análisis sintáctico convierte el texto de entrada en otras estructuras (comúnmente árboles), que son más útiles para el posterior análisis y capturan la jerarquía implícita de la entrada. Un analizador léxico crea tokens de una secuencia de caracteres de entrada y son estos tokens los que son procesados por el analizador sintáctico para construir la estructura de datos, por ejemplo un árbol de análisis o árboles de sintaxis abstracta.\nFlujo de actualización:Early Access\nSistema:Windows 10 64-bit\nV1 (core: v.1.3)\nTipo de instalación: Para el usuario actual\n Información legal\nALUF\nPolítica de privacidad\nTérminos de servicio")
+
     def exit():
         sys.exit()
-
 
 if __name__ == "__main__":
     import sys
