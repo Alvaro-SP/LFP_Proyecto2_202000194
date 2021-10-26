@@ -7,8 +7,8 @@
 imprimir("/***** ***** ***** ");
 imprimir("Claves");
 imprimir(" ***** ***** *****\");
-imprimirln(" ")
-imprimirln(" ")
+imprimirln(" ");
+imprimirln(" ");
 
 Claves = [
 	"codigo", "producto", "precio_compra", 
@@ -18,8 +18,8 @@ Claves = [
 imprimir("/***** ***** ***** ");
 imprimir("Registros");
 imprimir(" ***** ***** *****\");
-imprimirln(" ")
-imprimirln(" ")
+imprimirln(" ");
+imprimirln(" ");
 
 Registros = [
 	{1, "Barbacoa", 10.50, 20.00, 6}

@@ -25,6 +25,7 @@ class analizefile():
         self.contreg=0
         self.contvalreg=0
         self.impr=0
+        self.clavetxt=0
         self.imprln=0
         self.conteotxt=0
         self.promtxt=0
@@ -35,6 +36,9 @@ class analizefile():
         self.mintxt=0
         self.exportxt=0
         self.contarchivos=1
+        self.listinsttxt=0
+        self.listinsttxt2=0
+        self.instxt=0
 
     def analizar(self, file):
         global contarchivos
@@ -52,8 +56,9 @@ class analizefile():
         self.cont=0
         self.contreg2=0
         self.contreg=0
-        self.contvalreg=0
         self.impr=0
+        self.regtxt=0
+        self.contvalreg=0
         self.imprln=0
         self.conteotxt=0
         self.promtxt=0
@@ -63,6 +68,9 @@ class analizefile():
         self.maxtxt=0
         self.mintxt=0
         self.exportxt=0
+        self.listinsttxt=0
+        self.listinsttxt2=0
+        self.instxt=0
         file=file.lower()
         #*inicializar atributos
         linea = 1
@@ -338,7 +346,11 @@ class analizefile():
             bgcolor="orange:red"    
             edge [weight=1000 style=radial color=black ]
             node [shape=ellipse style="filled"  color="green:lightblue" gradientangle="315"]
-            ___INICIO___[shape=ellipse color=green fontcolor=black]  \n""" 
+            ___INICIO___[shape=ellipse color=green fontcolor=black]  \n"""
+        self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES__\" ]"
+        self.listinsttxt=self.cont
+        self.cont+=1
+        self.Arbol_claves+=f"\n___INICIO___ -> {self.listinsttxt} "
         self.Sintactic_analize(indicetoken)
         if self.canproces != False :
             self.textoconsola+="*****  Fin del Análisis Sintáctico  *****\n"
@@ -540,10 +552,10 @@ class analizefile():
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ) y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def contarsi4(self, indicetoken):
-        if self.listaTokens[indicetoken].tipo=='entero':
+        if self.listaTokens[indicetoken].tipo=='entero' or self.listaTokens[indicetoken].tipo=='decimal':
             return self.contarsi5(indicetoken+1)
         else:
-            print(f"Error sintáctico: Se esperaba un ENTERO y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
+            print(f"Error sintáctico: Se esperaba un ENTERO o decimal y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
             self.listaErrores.append(Error(f'Se esperaba entero y se recibió: ({self.listaTokens[indicetoken].tipo})', 'Sintáctico', self.listaTokens[indicetoken].linea, self.listaTokens[indicetoken].columna))
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un entero y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
@@ -641,7 +653,7 @@ class analizefile():
             self.Arbol_claves+=f"\n{self.cont} [ label=\"]\" ]"
             temp=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n__CLAVES__ -> {temp} "
+            self.Arbol_claves+=f"\n{self.clavetxt} -> {temp} "
             self.Arbol+=self.Arbol_claves
             # self.tabla.append(self.listClaves)
             return True, indicetoken
@@ -668,8 +680,8 @@ class analizefile():
             self.Arbol_claves+=f"\n{self.cont} [ label=\"[\" ]"
             temp=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n__CLAVES__ -> {temp} "
-            self.Arbol_claves+=f"\n__CLAVES__ -> __LISTACLAVES__ "
+            self.Arbol_claves+=f"\n{self.clavetxt} -> {temp} "
+            self.Arbol_claves+=f"\n{self.clavetxt} -> __LISTACLAVES__ "
             
             return self.Sclave3(indicetoken+1)
         else:
@@ -681,7 +693,7 @@ class analizefile():
             self.Arbol_claves+=f"\n{self.cont} [ label=\"=\" ]"
             temp=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n__CLAVES__ -> {temp} "
+            self.Arbol_claves+=f"\n{self.clavetxt} -> {temp} "
             return self.Sclave2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un signo IGUAL = y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -694,7 +706,7 @@ class analizefile():
             self.Arbol_claves+=f"\n{self.cont} [ label=\"]\" ]"
             corchetecont=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n__REGISTROS__ -> {corchetecont}"
+            self.Arbol_claves+=f"\n{self.regtxt} -> {corchetecont}"
             self.Arbol+=self.Arbol_claves
             return True, indicetoken
         elif self.listaTokens[indicetoken].tipo=='llavea':
@@ -787,8 +799,8 @@ class analizefile():
             self.Arbol_claves+=f"\n{self.cont} [ label=\"[\" ]"
             temp=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n__REGISTROS__ -> {temp} "
-            self.Arbol_claves+="\n__REGISTROS__ -> \"__LISTAREGISTROS__ \" "
+            self.Arbol_claves+=f"\n{self.regtxt}  -> {temp} "
+            self.Arbol_claves+=f"\n{self.regtxt}  -> \"__LISTAREGISTROS__ \" "
             return self.Sregistro3(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un {self.listaTokens[indicetoken].tipo} y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -799,7 +811,7 @@ class analizefile():
             self.Arbol_claves+=f"\n{self.cont} [ label=\"=\" ]"
             temp=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n__REGISTROS__ -> {temp} "
+            self.Arbol_claves+=f"\n{self.regtxt}  -> {temp} "
             return self.Sregistro2(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un un signo IGUAL = y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -1093,7 +1105,7 @@ class analizefile():
             self.textoconsola+=f"\nTraceback (most recent call last):\nError sintáctico: Se esperaba un PARENTESIS ) y se recibió: ({self.listaTokens[indicetoken].tipo}) en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}"
             return False, indicetoken
     def Scontarsi4(self, indicetoken, clavecont):
-        if self.listaTokens[indicetoken].tipo=='entero':
+        if self.listaTokens[indicetoken].tipo=='cadena' or self.listaTokens[indicetoken].tipo=='entero'  or self.listaTokens[indicetoken].tipo=='decimal':
             self.Arbol_claves+=f"\n{self.cont} [ label=\"{self.listaTokens[indicetoken].lexema}\" ]"
             temp=self.cont
             self.cont+=1
@@ -1107,9 +1119,9 @@ class analizefile():
                 for w in range(len(self.tabla)):
                     if self.tabla[w][i]==self.listaTokens[indicetoken].lexema:
                         cont+=1
-                self.textoconsola+=f"\n{cont}\n"
+                self.textoconsola+=f"\nCantidad de elementos encontrados en ({self.listaTokens[indicetoken].lexema}):{cont}\n"
             except:
-                self.textoconsola+=f"No existe una tabla previa.\n"
+                self.textoconsola+=f"(Contarsi) No existe una tabla previa o el valor no esta bien especificado.\n"
             return self.Scontarsi5(indicetoken+1)
         else:
             print(f"Error sintáctico: Se esperaba un ENTERO y se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
@@ -1458,83 +1470,280 @@ class analizefile():
     def CargarListas(self, indicetoken):
         self.Arbol_claves=""
         if self.listaTokens[indicetoken].tipo=='claves':
-            self.Arbol_claves+="\n___INICIO___ -> __CLAVES__ "
+            
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__CLAVES__\" ]"
+            self.clavetxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.clavetxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
+
             return self.Sclave1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='registros':
-            self.Arbol_claves+="\n___INICIO___ -> __REGISTROS__ "
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__REGISTROS__\" ]"
+            self.regtxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.regtxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
+
             return self.Sregistro1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='imprimir':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__IMPRIMIR__\" ]"
+            # self.impr=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.impr} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__IMPRIMIR__\" ]"
             self.impr=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.impr} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.impr} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.Simprimir1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='imprimirln':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__IMPRIMIRLN__\" ]"
+            # self.imprln=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.imprln} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__IMPRIMIRLN__\" ]"
             self.imprln=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.imprln} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.imprln} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
 
             return self.Simprimirln1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='conteo':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__CONTEO__\" ]"
+            # self.conteotxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.conteotxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__CONTEO__\" ]"
             self.conteotxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.conteotxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.conteotxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.Sconteo1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='promedio':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__PROMEDIO__\" ]"
+            # self.promtxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.promtxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__PROMEDIO__\" ]"
             self.promtxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.promtxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.promtxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.Spromedio1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='contarsi':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__CONTARSI__\" ]"
+            # self.contarsitxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.contarsitxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__CONTARSI__\" ]"
             self.contarsitxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.contarsitxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.contarsitxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.Scontarsi1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='datos':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__DATOS__\" ]"
+            # self.datostxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.datostxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__DATOS__\" ]"
             self.datostxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.datostxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.datostxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.Sdatos1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='sumar':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__SUMAR__\" ]"
+            # self.sumartxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.sumartxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__SUMAR__\" ]"
             self.sumartxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.sumartxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.sumartxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.Sumar1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='max':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__MAX__\" ]"
+            # self.maxtxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.maxtxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__MAX__\" ]"
             self.maxtxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.maxtxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.maxtxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.max1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='min':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__MIN__\" ]"
+            # self.mintxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.mintxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__MIN__\" ]"
             self.mintxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.mintxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.mintxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
             return self.min1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='exportarreporte':
+            # self.Arbol_claves+=f"\n{self.cont} [ label=\"__EXPORTARREPORTE__\" ]"
+            # self.exportxt=self.cont
+            # self.cont+=1
+            # self.Arbol_claves+=f"\n___INICIO___ -> {self.exportxt} "
             self.Arbol_claves+=f"\n{self.cont} [ label=\"__EXPORTARREPORTE__\" ]"
             self.exportxt=self.cont
             self.cont+=1
-            self.Arbol_claves+=f"\n___INICIO___ -> {self.exportxt} "
 
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__INSTRUCCION__\" ]"
+            self.instxt=self.cont
+            self.cont+=1
+
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {self.instxt} "
+
+            self.Arbol_claves+=f"\n{self.instxt} -> {self.exportxt} "
+
+            self.Arbol_claves+=f"\n{self.cont} [ label=\"__LISTA_INSTRUCCIONES2__\" ]"
+            temp=self.cont
+            self.cont+=1
+            self.Arbol_claves+=f"\n{self.listinsttxt} -> {temp} "
+            self.listinsttxt=temp
 
             return self.exportarReporte1(indicetoken+1)
         elif self.listaTokens[indicetoken].tipo=='comentariosimple' or self.listaTokens[indicetoken].tipo=='comentariomultilinea':
-            self.Arbol_claves+="\n___INICIO___ -> __COMENTARIOS__ "
+            # self.Arbol_claves+="\n___INICIO___ -> __COMENTARIOS__ "
             return True, indicetoken
         else:
             print(f"Error sintáctico: Se recibió: {self.listaTokens[indicetoken].tipo} en la Línea: {self.listaTokens[indicetoken].linea} y Columna: {self.listaTokens[indicetoken].columna}")
